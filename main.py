@@ -34,7 +34,7 @@ def char_to_word(text, values):
 
 def plot_neuron_heatmap(text, values):
     preprocessed_text = utils.preprocess(text)
-    n_limit = 128
+    n_limit = 57
     num_chars = len(preprocessed_text)
 
     for i in np.arange(0, len(values), n_limit):
