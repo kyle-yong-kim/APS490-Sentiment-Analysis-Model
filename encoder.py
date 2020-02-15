@@ -289,6 +289,7 @@ class Model(object):
             features = smb[0, unsort_idxs, :]
             print('%0.3f seconds to transform %d examples' %
                   (time.time() - tstart, n))
+
             return features, track_indices_values
 
         def cell_transform(xs, indexes=None):
