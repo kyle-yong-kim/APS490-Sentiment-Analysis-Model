@@ -13,6 +13,7 @@ def char_to_word(text, values):
     chars_to_display = "".join(list(map(lambda x: chr(int(x)), preprocessed_text)))
 
     sentiment_so_far = 0
+    sentiment_overall = 0
     str_so_far = ""
     pos = []
     neg = []
@@ -32,8 +33,10 @@ def char_to_word(text, values):
         elif char.isalpha():
             str_so_far += char
             sentiment_so_far += values[i]
+        
+        sentiment_overall += values[i]
 
-    return pos, neg
+    return pos, neg, round(sentiment_overall/len(chars_to_display), 2)
 
 def plot_neuron_heatmap(text, values):
     preprocessed_text = utils.preprocess(text)
@@ -89,6 +92,7 @@ def get_aspects(pos, neg, synonymDict):
     
     res = {}
 
+    # only care about identification
     for key, synonymSet in synonymDict.items():
         for word,_ in pos:
             if word.lower() in synonymSet:
@@ -100,38 +104,30 @@ def get_aspects(pos, neg, synonymDict):
 
     return res
 
-def main(review_text_list):
+def main(df):
     model = Model()
     sentiment_neuron_index = 2388
-
-    # review_text = "This is a good branch. Friendly staff and good service. However, the line up was very very long and slow. I had to wait 30 minutes in line to get my service."
-    # review_text = "Branch looks really nice but staff also needs to be kind to TD customers."
-    # review_text = "This is good branch. But their service is terrible."
-
-    if len(review_text_list) == 0: 
-        review_text = "I had an issue with my accounts that TD could not resolve for me for years. I went to this branch & Ayush, who was the branch manager came to help me. Not only did he help me with what I came in for, but helped resolve my issue after asking for my banking experience with TD. He was very professionally dressed & was always smiling. He's a keeper. I'll be banking with TD for a very long time. Thank you"
-
-    size = len(review_text_list)
+    size = df.shape[0]
 
     # generate synonym set
     labelDict = {
-        'service' : ('service', 'help', 'benefit', 'informative'),
-        'queue' : ('queue','time','wait', 'fast', 'slow',),
-        'friendliness' : ('friendliness','friendly', 'kind', 'rude',)
+        'service' : ('knowledge','knowledgeable','service', 'help', 'helpful','benefit', 'informative', 'mistake', 'error', 'credible', 'quality', 'stupid', 'competence', 'inexperience', 'experience'),
+        'queue' : ('queue','time','wait', 'fast', 'slow','line'),
+        'friendliness' : ('friendliness','friendly', 'kind', 'rude', 'ignore', 'attention', 'professional', 'comforting', 'warm', 'cold', 'polite')
         }
-
     synonymDict = build_synonymDict(labelDict)
-
+    
     res = {}
-    for i, review in enumerate(review_text_list):
+    for i, row in df.iterrows():
+        review = row['Review']
         neuron_values = get_tracked_neuron_values_for_a_review(model, review, [sentiment_neuron_index])[0]
-        pos, neg = char_to_word(review, neuron_values)
+        pos, neg, sentiment_avg = char_to_word(review, neuron_values)
 
         # plot function only for visualization
         # plot_neuron_heatmap(review_text, neuron_values)
 
         aspect_performance = get_aspects(pos, neg, synonymDict)
 
-        res[i] = (review, pos, neg, aspect_performance)
+        res[i] = (review, sentiment_avg, pos, neg, aspect_performance)
 
     return res

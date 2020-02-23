@@ -1,5 +1,6 @@
 import main
 import pandas as pd
+import pickle
 
 # send review data here
 review_text = "This is a good branch. Friendly staff and good service. However, the line up was very very long and slow. I had to wait 30 minutes in line to get my service."
@@ -36,7 +37,9 @@ review_text_list = ["Waited in line and finally reached to the counter. Nobody h
 fileLoc = '.\Test_Validation Data.xlsx'
 df_1 = pd.read_excel(fileLoc, sheet_name=None)
 df = pd.concat(pd.read_excel(fileLoc, sheet_name=[0,1]), ignore_index=True)
-# review_text_list = list(df['Review'])
-res = main.main(review_text_list = review_text_list)
+res = main.main(df = df)
+
+with open('prediction.pickle', 'wb') as f:
+    pickle.dump(res, f)
 
 print("Done")
