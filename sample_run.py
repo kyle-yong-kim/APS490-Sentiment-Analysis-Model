@@ -1,4 +1,5 @@
 import main
+import pandas as pd
 
 # send review data here
 review_text = "This is a good branch. Friendly staff and good service. However, the line up was very very long and slow. I had to wait 30 minutes in line to get my service."
@@ -28,8 +29,14 @@ review_text_list = ["Great customer service from Kathleen Le! People like her de
 
 # label performance 
 review_text_list = ["Waited in line and finally reached to the counter. Nobody helped me. One of the lady told me to wait and never returned. They just called people behind me and helped them first. It's almost 20 minutes now.", "Great customer service from Kathleen Le! People like her deserve a shout out for excellent service. Thanks again!"]
-
+review_text_list = ["Waited in line and finally reached to the counter. Nobody helped me. One of the lady told me to wait and never returned. They just called people behind me and helped them first. However, great customer service from Kathleen Le! People like her deserve a shout out for excellent service. Thanks again!"]
 # review_text = "I gave them a call, they didn't pick up so i left a message. Never called back. Edit: I gave this 1 star before but now it's 3 stars because I went and got the business done right away thanks to Zahen even though they never called."
-res = main.main(review_text_list=review_text_list)
+# load the text
+
+fileLoc = '.\Test_Validation Data.xlsx'
+df_1 = pd.read_excel(fileLoc, sheet_name=None)
+df = pd.concat(pd.read_excel(fileLoc, sheet_name=[0,1]), ignore_index=True)
+# review_text_list = list(df['Review'])
+res = main.main(review_text_list = review_text_list)
 
 print("Done")
